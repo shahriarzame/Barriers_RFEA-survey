@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Road Freight Electrification Barriers Survey</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 20px;
+            padding-top: 100px;
+            background: #f5f5f5;
+            line-height: 1.6;
+        }
+        h1 { color: #2c3e50; font-size: 1.5rem; }
+        h2 { color: #34495e; font-size: 1.2rem; margin-top: 2.5rem; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
+        h3 { color: #7f8c8d; font-size: 1rem; margin-top: 1.5rem; }
+        
+        .sticky-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 15px 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+        .sticky-header-content {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        .progress-bar {
+            background: #ecf0f1;
+            border-radius: 10px;
+            height: 20px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            background: #3498db;
+            height: 100%;
+            transition: width 0.3s;
+        }
+        #progress-text {
+            margin: 5px 0 0 0;
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+        
+        .question-block {
+            background: white;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .question-number {
+            color: #7f8c8d;
+            font-size: 0.85rem;
+            margin-bottom: 5px;
+        }
+        .question-text {
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+        .options label {
+            display: block;
+            padding: 10px 15px;
+            margin: 5px 0;
+            background: #ecf0f1;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .options label:hover { background: #d5dbdb; }
+        .options input[type="radio"] { margin-right: 10px; }
+        .options input[type="radio"]:checked + span { font-weight: 600; }
+        
+        .highlight-most { color: #e74c3c; font-weight: 600; }
+        .highlight-least { color: #27ae60; font-weight: 600; }
+        
+        .section { margin-bottom: 40px; }
+        .section-header {
+            background: #3498db;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-top: 30px;
+        }
+        .comparison-section { display: none; }
+        .btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 20px;
+        }
+        .btn:hover { background: #2980b9; }
+        .btn:disabled { background: #bdc3c7; cursor: not-allowed; }
+        .btn-next { background: #27ae60; }
+        .btn-next:hover { background: #1e8449; }
+        .btn-start { background: #9b59b6; font-size: 1.1rem; padding: 15px 30px; }
+        .btn-start:hover { background: #8e44ad; }
+        
+        #results {
+            display: none;
+            background: #d5f5e3;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        .error-msg {
+            color: #e74c3c;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+        
+        .info-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 18px;
+            height: 18px;
+            background: #3498db;
+            color: white;
+            border-radius: 50%;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-left: 6px;
+            border: none;
+            vertical-align: middle;
+        }
+        .info-btn:hover { background: #2980b9; }
+        
+        .barrier-name { display: inline; }
+        
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            max-width: 500px;
+            margin: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        }
+        .modal h4 { margin: 0 0 15px 0; color: #2c3e50; }
+        .modal p { margin: 0 0 20px 0; color: #555; line-height: 1.6; }
+        .modal-close {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .modal-close:hover { background: #2980b9; }
+        
+        .comparison-set-title {
+            background: #f8f9fa;
+            padding: 12px 15px;
+            border-left: 4px solid #3498db;
+            margin: 20px 0 15px 0;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .intro-page {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .intro-page h1 { color: #2c3e50; font-size: 1.8rem; margin-bottom: 20px; }
+        .intro-page p { color: #555; margin-bottom: 15px; }
+        .intro-page ul { color: #555; margin: 15px 0; padding-left: 25px; }
+        .intro-page li { margin-bottom: 8px; }
+        .intro-highlight {
+            background: #e8f4fc;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .intro-time {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #7f8c8d;
+            margin: 20px 0;
+        }
+        
+        .demo-section { display: none; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+        .form-group .required { color: #e74c3c; }
+        .form-group input[type="text"],
+        .form-group input[type="email"],
+        .form-group input[type="number"],
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ecf0f1;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        .form-group small { color: #7f8c8d; font-size: 0.85rem; }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        @media (max-width: 500px) {
+            .form-row { grid-template-columns: 1fr; }
+        }
+        
+        #survey-container { display: none; }
+        
+        /* Submitting overlay */
+        .submit-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255,255,255,0.9);
+            z-index: 3000;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        .submit-overlay.active { display: flex; }
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #ecf0f1;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .submit-text {
+            margin-top: 20px;
+            font-size: 1.1rem;
+            color: #2c3e50;
+        }
+        
+        .submit-error {
+            display: none;
+            background: #fee;
+            border: 1px solid #e74c3c;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            color: #c0392b;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sticky Progress Header -->
+    <div class="sticky-header">
+        <div class="sticky-header-content">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress" style="width: 0%"></div>
+            </div>
+            <p id="progress-text">Introduction</p>
+        </div>
+    </div>
+
+    <!-- Submitting Overlay -->
+    <div class="submit-overlay" id="submit-overlay">
+        <div class="spinner"></div>
+        <div class="submit-text">Submitting your responses...</div>
+    </div>
+
+    <!-- SECTION 1: Introduction Page -->
+    <div class="intro-page" id="intro-page">
+        <h1>🚛 Road Freight Electrification & Automation Barriers Survey</h1>
+        
+        <p>Thank you for participating in this research study on identifying barriers to road freight electrification and automation.</p>
+        
+        <div class="intro-highlight">
+            <strong>Purpose of This Study</strong>
+            <p style="margin-bottom:0; margin-top:10px;">This survey aims to identify and prioritize the key barriers hindering the adoption of electric and automated technologies in road freight transportation. Your expert insights will help inform policy recommendations and industry strategies.</p>
+        </div>
+        
+        <p><strong>What to Expect:</strong></p>
+        <ul>
+            <li>First, we'll ask a few questions about your background and experience</li>
+            <li>Then, you'll evaluate different categories of barriers using a comparison-based method</li>
+            <li>For each barrier category, you'll identify the most and least challenging barriers, then compare them</li>
+        </ul>
+        
+        <div class="intro-time">
+            <span style="font-size: 1.5rem;">⏱️</span>
+            <span><strong>Estimated time:</strong> 15-20 minutes</span>
+        </div>
+        
+        <p><strong>Confidentiality:</strong> Your responses will be kept confidential and used only for research purposes. No personally identifiable information will be published.</p>
+        
+        <p>If you have any questions about this survey, please contact: <em>[Your contact email]</em></p>
+        
+        <button class="btn btn-start" onclick="showDemographics()">Begin Survey →</button>
+    </div>
+
+    <!-- SECTION 2: Demographics -->
+    <div class="demo-section" id="demo-section">
+        <div class="section-header">
+            <h2 style="margin:0; color:white;">About You</h2>
+        </div>
+        <p style="color: #7f8c8d; margin-top: 15px;">Please provide some information about your background. Fields marked with <span style="color:#e74c3c;">*</span> are required.</p>
+        
+        <div class="question-block">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Name <span class="required">*</span></label>
+                    <input type="text" id="demo-name" placeholder="Your full name" required>
+                </div>
+                <div class="form-group">
+                    <label>Email <span class="required">*</span></label>
+                    <input type="email" id="demo-email" placeholder="your.email@example.com" required>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Organization / Company <span class="required">*</span></label>
+                <input type="text" id="demo-organization" placeholder="Name of your organization" required>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Job Title / Occupation <span class="required">*</span></label>
+                    <input type="text" id="demo-occupation" placeholder="e.g., Logistics Manager, Researcher" required>
+                </div>
+                <div class="form-group">
+                    <label>Industry Sector <span class="required">*</span></label>
+                    <select id="demo-industry" required>
+                        <option value="">-- Select --</option>
+                        <option value="Freight/Logistics">Freight / Logistics</option>
+                        <option value="Transportation">Transportation</option>
+                        <option value="Automotive/OEM">Automotive / OEM</option>
+                        <option value="Energy/Utilities">Energy / Utilities</option>
+                        <option value="Government/Public Sector">Government / Public Sector</option>
+                        <option value="Academia/Research">Academia / Research</option>
+                        <option value="Consulting">Consulting</option>
+                        <option value="Technology">Technology</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Years of Experience <span class="required">*</span></label>
+                    <select id="demo-experience" required>
+                        <option value="">-- Select --</option>
+                        <option value="0-2">0 - 2 years</option>
+                        <option value="3-5">3 - 5 years</option>
+                        <option value="6-10">6 - 10 years</option>
+                        <option value="11-15">11 - 15 years</option>
+                        <option value="16-20">16 - 20 years</option>
+                        <option value="20+">More than 20 years</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Highest Education Level <span class="required">*</span></label>
+                    <select id="demo-education" required>
+                        <option value="">-- Select --</option>
+                        <option value="High School">High School</option>
+                        <option value="Bachelor's">Bachelor's Degree</option>
+                        <option value="Master's">Master's Degree</option>
+                        <option value="PhD">PhD / Doctorate</option>
+                        <option value="Professional">Professional Degree (MBA, JD, etc.)</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Country <span class="required">*</span></label>
+                <input type="text" id="demo-country" placeholder="Country of residence" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Area of Expertise (Optional)</label>
+                <textarea id="demo-expertise" rows="2" placeholder="e.g., Fleet management, EV technology, Supply chain optimization..."></textarea>
+                <small>Briefly describe your relevant expertise or specialization</small>
+            </div>
+            
+            <div class="error-msg" id="demo-error" style="display:none;">Please fill in all required fields.</div>
+            
+            <button class="btn btn-next" onclick="startSurvey()">Continue to Survey Questions →</button>
+        </div>
+    </div>
+
+    <!-- SECTION 3: Survey Questions -->
+    <div id="survey-container"></div>
+
+    <!-- Results -->
+    <div id="results">
+        <h2>✅ Survey Complete!</h2>
+        <p>Your responses have been successfully submitted. Thank you for participating in this research!</p>
+        <p style="color: #7f8c8d;">You may now close this window.</p>
+        <div id="summary"></div>
+        <div class="submit-error" id="submit-error">
+            <strong>Submission Error:</strong> <span id="error-message"></span>
+            <p style="margin-top:10px; margin-bottom:0;">Your responses have been saved locally. Please try again or contact the researcher.</p>
+        </div>
+    </div>
+
+    <!-- Info Modal -->
+    <div class="modal-overlay" id="modal-overlay">
+        <div class="modal">
+            <h4 id="modal-title">Barrier Title</h4>
+            <p id="modal-description">Description goes here...</p>
+            <button class="modal-close" onclick="closeModal()">Close</button>
+        </div>
+    </div>
+
+    <script>
+        // =====================================================
+        // CONFIGURATION - UPDATE THIS URL AFTER DEPLOYING YOUR GOOGLE APPS SCRIPT
+        // =====================================================
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz48Kgvf7xP7AOr1K_jyNIXesNL7PDfsSU46fusa-8-VIekZ5qZR_DR_dyyHQ-FWaQ/exec";
+        // =====================================================
+        
+        let respondentInfo = {};
+        
+        const descriptions = {
+            'High total cost of fleet ownership': 'High total cost of ownership results from expensive batteries, automation technologies, cost uncertainties, charging inefficiencies, limited servicing infrastructure, battery degradation, high electricity tariff during peak hour and increased system complexity, elevating operating expenses and diminishing overall economic viability.',
+            'High infrastructure cost': 'Extensive capital is required for charging stations, grid upgrades, and electric road systems, creating major cost burdens especially for long-haul routes and small operators.',
+            'High financial risk': 'Volatile freight demand undermines investment recovery for electric and automated trucks, which depend on high utilization. Low use of costly charging infrastructure increases financial risk, while broader economic uncertainty deters capital-constrained carriers and slows scalable deployment.',
+            'Complex business models': 'Complex and unstandardized business models create financial uncertainty in electrified and automated freight. Ambiguous cost–benefit allocation in collaborative schemes (e.g., platooning) and limited research on leasing or sharing models hinder capital mitigation.',
+            'Battery lifecycle issues': 'Battery reliance on scarce minerals (lithium, cobalt, nickel) drives supply risks and extraction impacts. Energy-intensive manufacturing raises initial GHG emissions and material demand. Weak recycling and disposal systems heighten pollution and resource losses.',
+            'Emissions from electricity generation': 'Environmental gains from electric freight depend on the grid\'s carbon intensity, shifting emissions from tailpipes to power generation. BEV benefits materialize only with low-carbon or renewable electricity. Carbon-intensive grids can negate reductions and increase SO₂ and PM₂.₅ from power plants.',
+            'Ecological impact of charging infrastructure': 'ERS infrastructure adds significant material and ecological burdens. High metal use (e.g., copper) drives extraction toxicity. Large installations increase land-use. Studies often omit these impacts. Protective zones, permissions, noise protection zones are additional considerations.',
+            'Emissions from induced demand with automation': 'Automation may increase overall freight demand and vehicle miles traveled, potentially offsetting environmental benefits from electrification.',
+            'Limited battery range': 'Limited battery range in electric freight necessitates large, costly, and heavy battery packs, raising purchase costs, increasing TCO, inducing range anxiety, and reducing payload capacity, which can require larger fleets.',
+            'Limited charging-network coverage': 'Sparse, uneven, and low-capacity charging networks hinder electric freight, limiting long-haul viability, and reducing operational flexibility. Insufficient public charging for on-route needs discourages adoption, reinforcing a "chicken-and-egg" cycle that delays infrastructure investment.',
+            'Delay in power-grid upgrade': 'Insufficient power-grid upgrades hinder large-scale electric freight, as fleet charging creates major peak loads requiring costly and slow infrastructure expansion. High upgrade costs and risks of overload discourage adoption, delaying reliable high-power charging deployment.',
+            'Uncertainty in technology maturity': 'Uncertain availability of electric and autonomous truck technologies delays investment decisions. Competing pathways (BEVs, fuel cells, ERS) and unclear deployment timelines for driverless systems increase risk. Limited data on CAV performance reinforces hesitation, leading operators to avoid long-term commitments to immature technologies.',
+            'Charging time issues': 'Slow charging times reduce vehicle availability and disrupt delivery schedules, with congestion at peak hours further delaying operations, especially for heavy-duty trucks.',
+            'Scheduling/synchronisation complexity': 'Rigid delivery schedules conflict with cost-efficient off-peak charging. Solving joint routing–charging problems is computationally complex, and autonomous systems add further coordination challenges, especially for platoon synchronization.',
+            'Uncertainty in traffic and weather conditions': 'ADS struggle in complex traffic and adverse weather, undermining reliability and trust, while low temperatures reduce EV range and unpredictable congestion disrupts scheduling.',
+            'Lack of stakeholder collaboration': 'Misaligned priorities and unclear roles among OEMs, logistics operators, utilities, and governments hinder coordinated investment in charging, grid upgrades, and digital infrastructure.',
+            'Lack of public acceptance': 'Low public acceptance delays electrified and automated freight, driven by safety concerns, distrust of autonomous systems, and fear of cyber risks. Limited awareness of benefits and resistance among drivers further hinder adoption, while weak trust slows supportive policy and investment.',
+            'Job losses & workforce-transition concerns': 'Automation raises fears of job losses and downgraded work quality, especially for long-distance drivers, reducing acceptance. The shift toward technical roles demands new skills, but limited reskilling programs and an aging workforce intensify resistance and slow adoption.',
+            'Inability to maintain required service levels': 'Unproven reliability of electric and autonomous systems threatens service levels required in freight, which operates within rigid time-windows and narrow margins.',
+            'Safety risks': 'Safety concerns for electric freight focus on battery fire and explosion risks, while autonomous systems face distrust over unexpected failures and high cybersecurity vulnerability.',
+            'Lack of supportive policies': 'Weak policy support and limited public financial incentives hinders electrified and automated freight by deterring investment in costly vehicles, charging, and grid upgrades.',
+            'Lack of regulations and standardizations': 'Fragmented legal frameworks and standards for interoperability create investment uncertainty for electrified and automated freight. Ambiguous rules and unclear liability force costly human supervision, limiting autonomous benefits. Cross-border regulatory inconsistency adds complexity.',
+            'Data governance challenges': 'Weak data governance and privacy concerns hinder collaboration and scalable connected operations, slowing market deployment.',
+            'Difference in political prioritization': 'Divergent political priorities across different territories slow electrified and automated freight.'
+        };
+
+        const surveyData = {
+            mainCategories: {
+                title: "Main Category Barriers",
+                items: ['Economic', 'Environmental', 'Technological', 'Operational', 'Social', 'Policy'],
+                hasDescriptions: false
+            },
+            economic: {
+                title: "Economic Barriers",
+                items: ['High total cost of fleet ownership', 'High infrastructure cost', 'High financial risk', 'Complex business models'],
+                hasDescriptions: true
+            },
+            environmental: {
+                title: "Environmental Barriers",
+                items: ['Battery lifecycle issues', 'Emissions from electricity generation', 'Ecological impact of charging infrastructure', 'Emissions from induced demand with automation'],
+                hasDescriptions: true
+            },
+            technological: {
+                title: "Technological Barriers",
+                items: ['Limited battery range', 'Limited charging-network coverage', 'Delay in power-grid upgrade', 'Uncertainty in technology maturity'],
+                hasDescriptions: true
+            },
+            operational: {
+                title: "Operational Barriers",
+                items: ['Charging time issues', 'Scheduling/synchronisation complexity', 'Uncertainty in traffic and weather conditions', 'Lack of stakeholder collaboration'],
+                hasDescriptions: true
+            },
+            social: {
+                title: "Social Barriers",
+                items: ['Lack of public acceptance', 'Job losses & workforce-transition concerns', 'Inability to maintain required service levels', 'Safety risks'],
+                hasDescriptions: true
+            },
+            policy: {
+                title: "Policy Barriers",
+                items: ['Lack of supportive policies', 'Lack of regulations and standardizations', 'Data governance challenges', 'Difference in political prioritization'],
+                hasDescriptions: true
+            }
+        };
+
+        const scaleOptions = ['Slightly more', 'Moderately more', 'Significantly more', 'Extremely more'];
+        const sectionKeys = Object.keys(surveyData);
+        let currentSection = -2;
+        let responses = {};
+
+        function showDemographics() {
+            document.getElementById('intro-page').style.display = 'none';
+            document.getElementById('demo-section').style.display = 'block';
+            currentSection = -1;
+            updateProgress();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function startSurvey() {
+            const name = document.getElementById('demo-name').value.trim();
+            const email = document.getElementById('demo-email').value.trim();
+            const organization = document.getElementById('demo-organization').value.trim();
+            const occupation = document.getElementById('demo-occupation').value.trim();
+            const industry = document.getElementById('demo-industry').value;
+            const experience = document.getElementById('demo-experience').value;
+            const education = document.getElementById('demo-education').value;
+            const country = document.getElementById('demo-country').value.trim();
+            const expertise = document.getElementById('demo-expertise').value.trim();
+            
+            if (!name || !email || !organization || !occupation || !industry || !experience || !education || !country) {
+                document.getElementById('demo-error').style.display = 'block';
+                return;
+            }
+            
+            respondentInfo = {
+                name, email, organization, occupation, industry, experience, education, country, expertise,
+                startTime: new Date().toISOString()
+            };
+            
+            document.getElementById('demo-error').style.display = 'none';
+            document.getElementById('demo-section').style.display = 'none';
+            document.getElementById('survey-container').style.display = 'block';
+            
+            currentSection = 0;
+            updateProgress();
+            initSurvey();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function showInfo(barrier) {
+            document.getElementById('modal-title').textContent = barrier;
+            document.getElementById('modal-description').textContent = descriptions[barrier] || 'No description available.';
+            document.getElementById('modal-overlay').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('modal-overlay').classList.remove('active');
+        }
+
+        document.getElementById('modal-overlay').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+
+        function renderBarrierItem(item, hasDescription) {
+            if (hasDescription && descriptions[item]) {
+                return `<span class="barrier-name">${item}</span><button type="button" class="info-btn" onclick="showInfo('${item.replace(/'/g, "\\'")}')">i</button>`;
+            }
+            return `<span class="barrier-name">${item}</span>`;
+        }
+
+        function generateSection(key, sectionIndex) {
+            const data = surveyData[key];
+            const items = data.items;
+            const hasDesc = data.hasDescriptions;
+            
+            let html = `
+                <div class="section" id="section-${key}">
+                    <div class="section-header">
+                        <h2 style="margin:0; color:white;">${data.title}</h2>
+                    </div>
+                    
+                    <div class="question-block">
+                        <div class="question-number">Question 1</div>
+                        <div class="question-text">Which is the <span class="highlight-most">MOST challenging</span> barrier among ${data.title}?</div>
+                        <div class="options" id="${key}-q1-options">
+                            ${items.map((item, idx) => `
+                                <label>
+                                    <input type="radio" name="${key}-most" value="${item}" onchange="handleSelection('${key}')">
+                                    ${renderBarrierItem(item, hasDesc)}
+                                </label>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <div class="question-block">
+                        <div class="question-number">Question 2</div>
+                        <div class="question-text">Which is the <span class="highlight-least">LEAST challenging</span> barrier among ${data.title}?</div>
+                        <div class="options" id="${key}-q2-options">
+                            ${items.map((item, idx) => `
+                                <label>
+                                    <input type="radio" name="${key}-least" value="${item}" onchange="handleSelection('${key}')">
+                                    ${renderBarrierItem(item, hasDesc)}
+                                </label>
+                            `).join('')}
+                        </div>
+                        <div class="error-msg" id="${key}-error" style="display:none;">Most and Least challenging cannot be the same!</div>
+                    </div>
+                    
+                    <button class="btn" id="${key}-continue" disabled onclick="showComparisons('${key}')">Continue to Comparison Questions →</button>
+                    
+                    <div class="comparison-section" id="${key}-comparisons"></div>
+                    
+                    <button class="btn btn-next" id="${key}-next" style="display:none;" onclick="nextSection()">
+                        ${sectionIndex < sectionKeys.length - 1 ? 'Continue to Next Section →' : 'Submit Survey'}
+                    </button>
+                </div>
+            `;
+            
+            return html;
+        }
+
+        function handleSelection(key) {
+            const mostSelected = document.querySelector(`input[name="${key}-most"]:checked`);
+            const leastSelected = document.querySelector(`input[name="${key}-least"]:checked`);
+            
+            const most = mostSelected ? mostSelected.value : null;
+            const least = leastSelected ? leastSelected.value : null;
+            
+            const btn = document.getElementById(`${key}-continue`);
+            const error = document.getElementById(`${key}-error`);
+            
+            if (most && least && most === least) {
+                error.style.display = 'block';
+                btn.disabled = true;
+            } else {
+                error.style.display = 'none';
+                btn.disabled = !(most && least);
+            }
+            
+            if (!responses[key]) responses[key] = {};
+            responses[key].most = most;
+            responses[key].least = least;
+        }
+
+        function showComparisons(key) {
+            const data = surveyData[key];
+            const hasDesc = data.hasDescriptions;
+            const most = responses[key].most;
+            const least = responses[key].least;
+            const remaining = data.items.filter(item => item !== most && item !== least);
+            
+            // Store remaining items for later reference
+            responses[key].remaining = remaining;
+            
+            const container = document.getElementById(`${key}-comparisons`);
+            let html = '<h3>Comparison Questions</h3>';
+            let questionNum = 3;
+            
+            html += `<div class="comparison-set-title">Comparing <span class="highlight-most">${most}</span> (Most Challenging) to other barriers:</div>`;
+            
+            remaining.forEach((barrier, idx) => {
+                html += `
+                    <div class="question-block">
+                        <div class="question-number">Question ${questionNum}</div>
+                        <div class="question-text">
+                            How much more challenging is <span class="highlight-most">${most}</span> (Most Challenging) 
+                            compared to ${renderBarrierItem(barrier, hasDesc)}?
+                        </div>
+                        <div class="options">
+                            ${scaleOptions.map(opt => `
+                                <label>
+                                    <input type="radio" name="${key}-comp-most-${idx}" value="${opt}" onchange="storeComparison('${key}', 'comp_most_${idx}', '${opt}')">
+                                    <span>${opt}</span>
+                                </label>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+                questionNum++;
+            });
+            
+            html += `<div class="comparison-set-title">Comparing other barriers to <span class="highlight-least">${least}</span> (Least Challenging):</div>`;
+            
+            remaining.forEach((barrier, idx) => {
+                html += `
+                    <div class="question-block">
+                        <div class="question-number">Question ${questionNum}</div>
+                        <div class="question-text">
+                            How much more challenging is ${renderBarrierItem(barrier, hasDesc)} 
+                            compared to <span class="highlight-least">${least}</span> (Least Challenging)?
+                        </div>
+                        <div class="options">
+                            ${scaleOptions.map(opt => `
+                                <label>
+                                    <input type="radio" name="${key}-comp-least-${idx}" value="${opt}" onchange="storeComparison('${key}', 'comp_least_${idx}', '${opt}')">
+                                    <span>${opt}</span>
+                                </label>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+                questionNum++;
+            });
+            
+            container.innerHTML = html;
+            container.style.display = 'block';
+            
+            document.getElementById(`${key}-continue`).style.display = 'none';
+            document.getElementById(`${key}-next`).style.display = 'block';
+            
+            container.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function storeComparison(key, compKey, value) {
+            if (!responses[key]) responses[key] = {};
+            responses[key][compKey] = value;
+        }
+
+        function nextSection() {
+            currentSection++;
+            updateProgress();
+            
+            if (currentSection >= sectionKeys.length) {
+                respondentInfo.endTime = new Date().toISOString();
+                submitSurvey();
+            } else {
+                const key = sectionKeys[currentSection];
+                document.getElementById(`section-${key}`).style.display = 'block';
+                document.getElementById(`section-${key}`).scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        // Submit survey to Google Sheets
+        async function submitSurvey() {
+            document.getElementById('submit-overlay').classList.add('active');
+            
+            const payload = {
+                respondent: respondentInfo,
+                responses: responses
+            };
+            
+            // Log to console for debugging
+            console.log('Submitting payload:', payload);
+            
+            try {
+                // Check if URL is configured
+                if (GOOGLE_SCRIPT_URL === "YOUR_GOOGLE_APPS_SCRIPT_URL_HERE") {
+                    throw new Error("Google Apps Script URL not configured. Please update GOOGLE_SCRIPT_URL in the HTML file.");
+                }
+                
+                const response = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors', // Required for Google Apps Script
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(payload)
+                });
+                
+                // With no-cors, we can't read the response, but if no error, assume success
+                document.getElementById('submit-overlay').classList.remove('active');
+                document.getElementById('results').style.display = 'block';
+                document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+                generateSummary();
+                
+            } catch (error) {
+                console.error('Submission error:', error);
+                document.getElementById('submit-overlay').classList.remove('active');
+                document.getElementById('results').style.display = 'block';
+                document.getElementById('submit-error').style.display = 'block';
+                document.getElementById('error-message').textContent = error.message;
+                document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+                generateSummary();
+                
+                // Save to localStorage as backup
+                localStorage.setItem('survey_backup_' + Date.now(), JSON.stringify(payload));
+            }
+        }
+
+        function updateProgress() {
+            const totalSteps = sectionKeys.length + 2;
+            const currentStep = currentSection + 3;
+            const progress = (currentStep / totalSteps) * 100;
+            document.getElementById('progress').style.width = `${Math.min(progress, 100)}%`;
+            
+            if (currentSection === -2) {
+                document.getElementById('progress-text').textContent = 'Introduction';
+            } else if (currentSection === -1) {
+                document.getElementById('progress-text').textContent = 'About You';
+            } else if (currentSection < sectionKeys.length) {
+                const sectionNames = ['Main Categories', 'Economic', 'Environmental', 'Technological', 'Operational', 'Social', 'Policy'];
+                document.getElementById('progress-text').textContent = `Section ${currentSection + 1} of ${sectionKeys.length}: ${sectionNames[currentSection]}`;
+            } else {
+                document.getElementById('progress-text').textContent = 'Complete!';
+            }
+        }
+
+        function generateSummary() {
+            let html = '<h3>Your Responses Summary</h3>';
+            html += `<p><strong>Respondent:</strong> ${respondentInfo.name} (${respondentInfo.organization})</p>`;
+            sectionKeys.forEach(key => {
+                if (responses[key]) {
+                    html += `
+                        <p><strong>${surveyData[key].title}:</strong><br>
+                        Most Challenging: ${responses[key].most || 'N/A'}<br>
+                        Least Challenging: ${responses[key].least || 'N/A'}</p>
+                    `;
+                }
+            });
+            document.getElementById('summary').innerHTML = html;
+        }
+
+        function initSurvey() {
+            const container = document.getElementById('survey-container');
+            
+            sectionKeys.forEach((key, idx) => {
+                container.innerHTML += generateSection(key, idx);
+                if (idx > 0) {
+                    document.getElementById(`section-${key}`).style.display = 'none';
+                }
+            });
+        }
+
+        updateProgress();
+    </script>
+</body>
+</html>
