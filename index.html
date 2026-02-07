@@ -130,8 +130,12 @@
         }
         .btn:hover { background: #2980b9; }
         .btn:disabled { background: #bdc3c7; cursor: not-allowed; }
-        .btn-next { background: #27ae60; }
-        .btn-next:hover { background: #1e8449; }
+        .btn-next { background: #7f8c8d; }
+        .btn-next:hover { background: #6c7a7d; }
+        .btn-prev { background: #7f8c8d; }
+        .btn-prev:hover { background: #6c7a7d; }
+        .btn-reset { background: #e74c3c; }
+        .btn-reset:hover { background: #c0392b; }
         .btn-start { background: #9b59b6; font-size: 1.1rem; padding: 15px 30px; }
         .btn-start:hover { background: #8e44ad; }
         .btn-submit { background: #27ae60; }
@@ -202,10 +206,14 @@
         /* Page Actions (Buttons Container) */
         .page-actions {
             display: flex;
-            gap: 15px;
+            gap: 10px;
             margin-top: 30px;
             justify-content: flex-end;
             flex-wrap: wrap;
+        }
+        .page-actions .btn {
+            padding: 8px 16px;
+            font-size: 0.85rem;
         }
 
         /* Toast Notification */
@@ -438,6 +446,101 @@
             margin-top: 20px;
             color: #c0392b;
         }
+
+        /* Guided Tour */
+        .tour-spotlight {
+            position: fixed;
+            z-index: 4001;
+            border-radius: 8px;
+            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.55);
+            transition: top 0.35s ease, left 0.35s ease, width 0.35s ease, height 0.35s ease;
+            pointer-events: none;
+        }
+        .tour-tooltip {
+            position: fixed;
+            z-index: 4002;
+            background: white;
+            border-radius: 10px;
+            padding: 20px 24px;
+            max-width: 360px;
+            min-width: 260px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+            animation: tourFadeIn 0.3s ease;
+        }
+        .tour-tooltip::before {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 0;
+            border: 10px solid transparent;
+        }
+        .tour-tooltip.arrow-top::before {
+            bottom: 100%;
+            left: 30px;
+            border-bottom-color: white;
+        }
+        .tour-tooltip.arrow-bottom::before {
+            top: 100%;
+            left: 30px;
+            border-top-color: white;
+        }
+        .tour-tooltip-step {
+            font-size: 0.8rem;
+            color: #7f8c8d;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+        .tour-tooltip-text {
+            font-size: 0.95rem;
+            color: #2c3e50;
+            line-height: 1.5;
+            margin-bottom: 16px;
+        }
+        .tour-tooltip-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+        .tour-tooltip-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        .tour-tooltip-btn:hover { background: #2980b9; }
+        .tour-tooltip-skip {
+            background: none;
+            border: none;
+            color: #7f8c8d;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+        .tour-tooltip-skip:hover { color: #2c3e50; text-decoration: underline; }
+        .tour-dots {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+        .tour-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #bdc3c7;
+        }
+        .tour-dot.active { background: #3498db; }
+        @keyframes tourFadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .tour-highlighted {
+            position: relative !important;
+            z-index: 4001 !important;
+        }
     </style>
 </head>
 <body>
@@ -498,9 +601,6 @@
             <span><strong>Estimated time:</strong> 20-30 minutes</span>
         </div>
         
-        <p><strong>Confidentiality:</strong> This survey is anonymous and responses will be used solely for academic research purposes. No personally identifiable information will be published.</p>
-        
-        <p style="font-size: 0.95em; color: #555;">This research is conducted by the Chair of Transportation Systems Engineering at Technical University of Munich (TUM), Germany. For questions, please contact: <strong>shahriar.zame@tum.de</strong></p>
 
         <!-- Barriers Framework Image -->
         <div style="text-align: center; margin: 25px 0;">
@@ -508,7 +608,11 @@
             <p style="font-size: 0.9em; color: #666; margin-top: 8px;"><em>Figure 1: Barrier categories and sub-barriers</em></p>
         </div>
 
-            <button class="btn btn-start" onclick="navigateToPage(1)">Begin Survey →</button>
+        <p><strong>Confidentiality:</strong> This survey is anonymous and responses will be used solely for academic research purposes. No personally identifiable information will be published.</p>
+        
+        <p style="font-size: 0.95em; color: #555;">This research is conducted by the Chair of Transportation Systems Engineering at Technical University of Munich (TUM), Germany. For questions, please contact: Shahriar Iqbal Zame (PhD candidate at TUM) at  <strong>shahriar.zame@tum.de</strong>  or Dr.-Ing. Mohammad Sadrani (Assistant Professor, University of Twente) at <strong>m.sadrani@utwente.nl</strong>. You may also reach out to our team leader Prof. Dr. Constantinos Antoniou at <strong>c.antoniou(at)tum.de.</strong>  </p>
+
+            <button class="btn btn-start" onclick="tourSuppressed = false; navigateToPage(1);">Begin Survey →</button>
         </div>
     </div>
 
@@ -594,9 +698,11 @@
             <div class="error-msg" id="demo-error" style="display:none;">Please fill in all required fields.</div>
 
             <div class="page-actions">
-                <button class="btn btn-next" onclick="navigateToPage(currentPage + 1)">Next Page →</button>
+                <button class="btn btn-prev" onclick="navigateToPage(currentPage - 1)">← Previous</button>
+                <button class="btn btn-next" onclick="navigateToPage(currentPage + 1)">Next →</button>
                 <button class="btn" onclick="exportData()" style="background:#7f8c8d;">📥 Export Data</button>
-                <button class="btn btn-submit" id="submit-btn-demo" onclick="attemptSubmit()" disabled>Submit Survey</button>
+                <button class="btn btn-submit" id="submit-btn-demo" onclick="attemptSubmit()">Submit Survey</button>
+                <button class="btn btn-reset" onclick="resetSurvey()">🗑️ Start Over</button>
             </div>
         </div>
     </div>
@@ -623,6 +729,22 @@
             <h4 id="modal-title">Barrier Title</h4>
             <p id="modal-description">Description goes here...</p>
             <button class="modal-close" onclick="closeModal()">Close</button>
+        </div>
+    </div>
+
+    <!-- Guided Tour Overlay -->
+    <div id="tour-container" style="display:none;">
+        <div class="tour-spotlight" id="tour-spotlight"></div>
+        <div class="tour-tooltip" id="tour-tooltip">
+            <div class="tour-tooltip-step" id="tour-step-label"></div>
+            <div class="tour-tooltip-text" id="tour-text"></div>
+            <div class="tour-tooltip-actions">
+                <div class="tour-dots" id="tour-dots"></div>
+                <div>
+                    <button class="tour-tooltip-skip" id="tour-skip-btn" onclick="endTour()">Skip</button>
+                    <button class="tour-tooltip-btn" id="tour-next-btn" onclick="advanceTour()">Next</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -708,6 +830,7 @@
         let lockedSections = {};
 
         // Multi-page navigation state
+        let tourSuppressed = false;
         let currentPage = 0;
         let pageCompletionStatus = {
             0: true,  // Intro (no inputs, always complete)
@@ -749,6 +872,17 @@
             // Auto-save progress
             if (typeof saveProgress === 'function') {
                 saveProgress();
+            }
+
+            // Trigger guided tours
+            if (!tourActive && !tourSuppressed) {
+                if (pageIndex === 1 && shouldShowTour('survey_tour_1')) {
+                    setTimeout(() => startTour(tour1Steps, 'survey_tour_1'), 600);
+                } else if (pageIndex === 2 && shouldShowTour('survey_tour_2')) {
+                    setTimeout(() => startTour(tour2Steps, 'survey_tour_2'), 800);
+                } else if (pageIndex === 3 && shouldShowTour('survey_tour_3')) {
+                    setTimeout(() => startTour(tour3Steps, 'survey_tour_3'), 800);
+                }
             }
         }
 
@@ -849,9 +983,9 @@
                                 pageCompletionStatus[7] && // Social
                                 pageCompletionStatus[8];   // Policy
 
-            // Enable/disable all submit buttons
+            // Update submit button style based on completion
             document.querySelectorAll('[id^="submit-btn"]').forEach(btn => {
-                btn.disabled = !allComplete;
+                btn.style.opacity = allComplete ? '1' : '0.6';
             });
         }
 
@@ -925,13 +1059,24 @@
                 console.log('Payload to save:', JSON.parse(JSON.stringify(payload)));
                 localStorage.setItem('survey_progress', JSON.stringify(payload));
                 console.log('Saved to localStorage successfully');
-                showToast('Progress saved successfully!', 'success');
+                // Progress saved silently
                 return true;
             } catch (error) {
                 console.error('Save error:', error);
                 showToast('Failed to save progress', 'error');
                 return false;
             }
+        }
+
+        function resetSurvey() {
+            if (!confirm('Are you sure you want to delete all progress and start over? This cannot be undone.')) {
+                return;
+            }
+            localStorage.removeItem('survey_progress');
+            localStorage.removeItem('survey_tour_1');
+            localStorage.removeItem('survey_tour_2');
+            localStorage.removeItem('survey_tour_3');
+            location.reload();
         }
 
         function loadProgress() {
@@ -1062,7 +1207,8 @@
                     }
                 });
 
-                // Navigate to saved page
+                // Navigate to saved page (suppress tour on restore)
+                tourSuppressed = true;
                 setTimeout(() => {
                     navigateToPage(savedPage);
                     updateProgressBar();
@@ -1272,9 +1418,11 @@
                         </div>
 
                         <div class="page-actions">
-                            <button class="btn btn-next" onclick="navigateToPage(currentPage + 1)">Next Page →</button>
+                            <button class="btn btn-prev" onclick="navigateToPage(currentPage - 1)">← Previous</button>
+                            ${sectionIndex < sectionKeys.length - 1 ? '<button class="btn btn-next" onclick="navigateToPage(currentPage + 1)">Next →</button>' : ''}
                             <button class="btn" onclick="exportData()" style="background:#7f8c8d;">📥 Export Data</button>
-                            <button class="btn btn-submit" id="submit-btn-page-${pageNumber}" onclick="attemptSubmit()" disabled>Submit Survey</button>
+                            <button class="btn btn-submit" id="submit-btn-page-${pageNumber}" onclick="attemptSubmit()">Submit Survey</button>
+                            <button class="btn btn-reset" onclick="resetSurvey()">🗑️ Start Over</button>
                         </div>
                     </div>
                 </div>
@@ -1713,6 +1861,84 @@
             }
         }
 
+        function scrollToFirstIncomplete(pageIndex) {
+            let target = null;
+
+            if (pageIndex === 1) {
+                // Demographics: find first empty required field
+                const fields = [
+                    { id: 'demo-occupation', wrapper: 'fg-occupation' },
+                    { id: 'demo-industry', wrapper: 'fg-industry' },
+                    { id: 'demo-experience', wrapper: 'fg-experience' },
+                    { id: 'demo-education', wrapper: 'fg-education' },
+                    { id: 'demo-country', wrapper: 'fg-country' }
+                ];
+                for (const f of fields) {
+                    const el = document.getElementById(f.id);
+                    if (!el) continue;
+                    let val = el.value.trim();
+                    // Handle "Other" sub-fields
+                    if (val === 'Other') {
+                        const otherId = f.id + '-other';
+                        const otherEl = document.getElementById(otherId);
+                        val = otherEl ? otherEl.value.trim() : '';
+                        if (!val) { target = document.getElementById(f.wrapper + '-other') || otherEl; break; }
+                    }
+                    if (!val) { target = document.getElementById(f.wrapper); break; }
+                }
+            } else if (pageIndex >= 2) {
+                // Survey section pages
+                const sectionIndex = pageIndex - 2;
+                const key = sectionKeys[sectionIndex];
+                if (!key) return;
+
+                const sectionResponses = responses[key] || {};
+
+                // Check Q1 (most) and Q2 (least)
+                if (!sectionResponses.most) {
+                    target = document.getElementById(`${key}-q1-block`);
+                } else if (!sectionResponses.least) {
+                    target = document.getElementById(`${key}-q2-block`);
+                } else {
+                    // Check if comparisons are visible
+                    const compContainer = document.getElementById(`${key}-comparisons`);
+                    if (!compContainer || compContainer.children.length === 0 || compContainer.style.display === 'none') {
+                        // Comparisons not started — highlight the Continue button
+                        target = document.getElementById(`${key}-continue`);
+                    } else {
+                        // Find first unanswered comparison question
+                        const othersForMost = sectionResponses.othersForMost || [];
+                        const othersForLeast = sectionResponses.othersForLeast || [];
+                        for (let i = 0; i < othersForMost.length; i++) {
+                            if (!sectionResponses[`comp_most_${i}`]) {
+                                target = document.getElementById(`${key}-comp-most-${i}-block`);
+                                break;
+                            }
+                        }
+                        if (!target) {
+                            for (let i = 0; i < othersForLeast.length; i++) {
+                                if (!sectionResponses[`comp_least_${i}`]) {
+                                    target = document.getElementById(`${key}-comp-least-${i}-block`);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                // Brief highlight effect
+                target.style.outline = '3px solid #e74c3c';
+                target.style.outlineOffset = '4px';
+                setTimeout(() => {
+                    target.style.outline = '';
+                    target.style.outlineOffset = '';
+                }, 2000);
+            }
+        }
+
         function validateAllPages() {
             // Update completion status for all pages
             for (let i = 0; i <= 8; i++) {
@@ -1757,8 +1983,10 @@
                 const incompletePageNames = incompletePages.map(i => pageNames[i]).join(', ');
                 showToast(`Please complete: ${incompletePageNames}`, 'error');
 
-                // Navigate to first incomplete page
-                navigateToPage(incompletePages[0]);
+                // Navigate to first incomplete page and scroll to first unfilled question
+                const firstIncompletePage = incompletePages[0];
+                navigateToPage(firstIncompletePage);
+                setTimeout(() => scrollToFirstIncomplete(firstIncompletePage), 400);
 
                 return false;
             }
@@ -1916,6 +2144,388 @@
                 }
             });
         }
+
+        // =====================================================
+        // GUIDED TOUR SYSTEM
+        // =====================================================
+        let tourCurrentStep = 0;
+        let tourActive = false;
+        let tourPreviousHighlighted = null;
+        let activeTourSteps = [];
+        let activeTourStorageKey = '';
+        let tourGeneration = 0; // increments each tour to invalidate stale timeouts
+
+        // Tour 1: UI overview on page 1 (Demographics)
+        const tour1Steps = [
+            {
+                target: null,
+                text: 'Your survey progress is automatically saved on your device. You may refresh the page or close the browser and return later — your progress will be retained. If you wish to restart the survey from the beginning, please use the \u201CStart Over\u201D button below.',
+                position: 'center'
+            },
+            {
+                target: '.page-indicators',
+                text: 'Here you can see your progress. You can use these page indicators to navigate between pages. Completed pages are bordered in green.',
+                position: 'bottom'
+            },
+            {
+                target: function() {
+                    const actions = document.querySelector('#page-1 .page-actions');
+                    if (!actions) return null;
+                    const prev = actions.querySelector('.btn-prev');
+                    const next = actions.querySelector('.btn-next');
+                    return [prev, next].filter(Boolean);
+                },
+                text: 'Use these buttons to navigate to the next or previous page.',
+                position: 'top'
+            },
+            {
+                target: function() {
+                    const actions = document.querySelector('#page-1 .page-actions');
+                    if (!actions) return null;
+                    const buttons = actions.querySelectorAll('.btn');
+                    for (const btn of buttons) {
+                        if (btn.textContent.includes('Export')) return btn;
+                    }
+                    return null;
+                },
+                text: 'Export your survey data at any time.',
+                position: 'top'
+            },
+            {
+                target: '#submit-btn-demo',
+                text: 'Survey can be only be submitted after completing all sections, but you can click this button to navigate the survey to the first missing question and get a reminder of any incomplete sections.',
+                position: 'top'
+            },
+            {
+                target: function() {
+                    const actions = document.querySelector('#page-1 .page-actions');
+                    if (!actions) return null;
+                    return actions.querySelector('.btn-reset');
+                },
+                text: 'Use this with caution \u2014 it deletes all your progress and restarts the survey from scratch.',
+                position: 'top'
+            }
+        ];
+
+        // Tour 3: Info button on page 3 (Economic Barriers)
+        const tour3Steps = [
+            {
+                target: function() {
+                    const page = document.getElementById('page-3');
+                    if (!page) return null;
+                    return page.querySelector('.info-btn');
+                },
+                text: 'Press this button to view detailed information of the specific barrier.',
+                position: 'bottom'
+            }
+        ];
+
+        // Tour 2: Question flow on page 2 (Main Categories)
+        const tour2Steps = [
+            {
+                target: function() {
+                    return document.getElementById('mainCategories-continue');
+                },
+                text: 'After the first two questions have been answered, press this button for the comparisons questions. Be advised that once you press this button, your answers to the first two questions will be locked and you will need to unlock them to make any changes (which will reset all comparison questions i.e. Question 3 and onwards in this page).',
+                position: 'top'
+            }
+        ];
+
+        function shouldShowTour(storageKey) {
+            return !localStorage.getItem(storageKey);
+        }
+
+        function startTour(steps, storageKey) {
+            if (!shouldShowTour(storageKey)) return;
+
+            // Invalidate any stale timeouts from a previous tour
+            tourGeneration++;
+            const myGeneration = tourGeneration;
+
+            activeTourSteps = steps;
+            activeTourStorageKey = storageKey;
+            tourCurrentStep = 0;
+
+            // Clear old content and hide elements BEFORE enabling tour
+            const container = document.getElementById('tour-container');
+            const spotlight = document.getElementById('tour-spotlight');
+            const tooltip = document.getElementById('tour-tooltip');
+            document.getElementById('tour-text').textContent = '';
+            document.getElementById('tour-step-label').textContent = '';
+            spotlight.style.cssText = 'opacity:0;';
+            tooltip.style.cssText = 'opacity:0; animation:none;';
+
+            // Now enable tour and show container
+            tourActive = true;
+            container.style.display = 'block';
+
+            const dotsContainer = document.getElementById('tour-dots');
+            dotsContainer.innerHTML = steps.map((_, i) =>
+                `<div class="tour-dot${i === 0 ? ' active' : ''}" id="tour-dot-${i}"></div>`
+            ).join('');
+
+            setTimeout(() => {
+                if (tourGeneration !== myGeneration) return; // stale, abort
+                showTourStep(0);
+            }, 500);
+        }
+
+        function endTour() {
+            tourActive = false;
+            tourGeneration++; // invalidate any pending timeouts
+
+            if (tourPreviousHighlighted) {
+                (Array.isArray(tourPreviousHighlighted) ? tourPreviousHighlighted : [tourPreviousHighlighted])
+                    .forEach(el => el.classList.remove('tour-highlighted'));
+                tourPreviousHighlighted = null;
+            }
+
+            // Reset sticky header z-index
+            const header = document.querySelector('.sticky-header');
+            if (header) header.style.zIndex = '';
+
+            // Reset spotlight/tooltip so nothing leaks to next tour
+            document.getElementById('tour-spotlight').style.cssText = '';
+            document.getElementById('tour-tooltip').style.cssText = '';
+            document.getElementById('tour-text').textContent = '';
+
+            document.getElementById('tour-container').style.display = 'none';
+            localStorage.setItem(activeTourStorageKey, 'true');
+        }
+
+        function advanceTour() {
+            tourCurrentStep++;
+            if (tourCurrentStep >= activeTourSteps.length) {
+                endTour();
+            } else {
+                showTourStep(tourCurrentStep);
+            }
+        }
+
+        function showTourStep(stepIndex, retryCount) {
+            retryCount = retryCount || 0;
+            const myGeneration = tourGeneration;
+            const step = activeTourSteps[stepIndex];
+            if (!step) { endTour(); return; }
+
+            // Remove previous highlight
+            if (tourPreviousHighlighted) {
+                (Array.isArray(tourPreviousHighlighted) ? tourPreviousHighlighted : [tourPreviousHighlighted])
+                    .forEach(el => el.classList.remove('tour-highlighted'));
+                tourPreviousHighlighted = null;
+            }
+
+            // Manage sticky header z-index for page indicators step
+            const header = document.querySelector('.sticky-header');
+            if (header) header.style.zIndex = step.target === '.page-indicators' ? '4002' : '';
+
+            // Handle centered steps with no target
+            if (step.target === null) {
+                positionTour(stepIndex, null);
+                return;
+            }
+
+            // Resolve target element(s)
+            let targetElements;
+            if (typeof step.target === 'function') {
+                const result = step.target();
+                if (!result) {
+                    if (retryCount < 3) {
+                        setTimeout(() => {
+                            if (tourGeneration !== myGeneration) return;
+                            showTourStep(stepIndex, retryCount + 1);
+                        }, 300);
+                        return;
+                    }
+                    advanceTour(); return;
+                }
+                targetElements = Array.isArray(result) ? result : [result];
+            } else {
+                const el = document.querySelector(step.target);
+                if (!el) {
+                    if (retryCount < 3) {
+                        setTimeout(() => {
+                            if (tourGeneration !== myGeneration) return;
+                            showTourStep(stepIndex, retryCount + 1);
+                        }, 300);
+                        return;
+                    }
+                    advanceTour(); return;
+                }
+                targetElements = [el];
+            }
+
+            // Add highlight to target(s)
+            targetElements.forEach(el => el.classList.add('tour-highlighted'));
+            tourPreviousHighlighted = targetElements.length === 1 ? targetElements[0] : targetElements;
+
+            // Scroll into view if needed
+            const firstRect = targetElements[0].getBoundingClientRect();
+            const isInView = firstRect.top >= 0 && firstRect.bottom <= window.innerHeight;
+
+            if (!isInView) {
+                targetElements[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                setTimeout(() => {
+                    if (tourGeneration !== myGeneration) return;
+                    positionTour(stepIndex, targetElements);
+                }, 400);
+            } else {
+                positionTour(stepIndex, targetElements);
+            }
+        }
+
+        function getCombinedRect(elements) {
+            let top = Infinity, left = Infinity, bottom = -Infinity, right = -Infinity;
+            elements.forEach(el => {
+                const r = el.getBoundingClientRect();
+                top = Math.min(top, r.top);
+                left = Math.min(left, r.left);
+                bottom = Math.max(bottom, r.bottom);
+                right = Math.max(right, r.right);
+            });
+            return { top, left, bottom, right, width: right - left, height: bottom - top };
+        }
+
+        function positionTour(stepIndex, targetElements) {
+            const step = activeTourSteps[stepIndex];
+            const padding = 8;
+            const spotlight = document.getElementById('tour-spotlight');
+            const tooltip = document.getElementById('tour-tooltip');
+
+            if (targetElements === null) {
+                // Centered step — no spotlight cutout, just full dark overlay
+                spotlight.style.top = '-10px';
+                spotlight.style.left = '-10px';
+                spotlight.style.width = '0px';
+                spotlight.style.height = '0px';
+                spotlight.style.borderRadius = '0';
+
+                // Update tooltip content
+                document.getElementById('tour-step-label').textContent = `Step ${stepIndex + 1} of ${activeTourSteps.length}`;
+                document.getElementById('tour-text').textContent = step.text;
+
+                const nextBtn = document.getElementById('tour-next-btn');
+                const skipBtn = document.getElementById('tour-skip-btn');
+                nextBtn.textContent = 'Next';
+                skipBtn.style.display = 'inline-block';
+
+                // Update dots
+                activeTourSteps.forEach((_, i) => {
+                    const dot = document.getElementById(`tour-dot-${i}`);
+                    if (dot) dot.classList.toggle('active', i === stepIndex);
+                });
+
+                // Center tooltip on screen — keep animation:none to prevent
+                // tourFadeIn's transform from overriding translate(-50%,-50%)
+                tooltip.classList.remove('arrow-top', 'arrow-bottom');
+                tooltip.style.animation = 'none';
+                tooltip.style.left = '50%';
+                tooltip.style.top = '50%';
+                tooltip.style.transform = 'translate(-50%, -50%)';
+
+                spotlight.style.opacity = '1';
+                tooltip.style.opacity = '1';
+                return;
+            }
+
+            // Reset transform for targeted steps
+            tooltip.style.transform = '';
+
+            const rect = getCombinedRect(targetElements);
+
+            // Position spotlight
+            spotlight.style.top = (rect.top - padding) + 'px';
+            spotlight.style.left = (rect.left - padding) + 'px';
+            spotlight.style.width = (rect.width + padding * 2) + 'px';
+            spotlight.style.height = (rect.height + padding * 2) + 'px';
+            spotlight.style.borderRadius = '8px';
+
+            // Update tooltip content
+            document.getElementById('tour-step-label').textContent = `Step ${stepIndex + 1} of ${activeTourSteps.length}`;
+            document.getElementById('tour-text').textContent = step.text;
+
+            const nextBtn = document.getElementById('tour-next-btn');
+            const skipBtn = document.getElementById('tour-skip-btn');
+            if (stepIndex === activeTourSteps.length - 1) {
+                nextBtn.textContent = 'Got it!';
+                skipBtn.style.display = 'none';
+            } else {
+                nextBtn.textContent = 'Next';
+                skipBtn.style.display = 'inline-block';
+            }
+
+            // Update dots
+            activeTourSteps.forEach((_, i) => {
+                const dot = document.getElementById(`tour-dot-${i}`);
+                if (dot) dot.classList.toggle('active', i === stepIndex);
+            });
+
+            // Position tooltip
+            tooltip.classList.remove('arrow-top', 'arrow-bottom');
+            tooltip.style.animation = 'none';
+            tooltip.offsetHeight; // force reflow
+            tooltip.style.animation = '';
+
+            const gap = 16;
+            if (step.position === 'bottom') {
+                tooltip.style.top = (rect.bottom + padding + gap) + 'px';
+                tooltip.style.left = Math.max(10, rect.left) + 'px';
+                tooltip.classList.add('arrow-top');
+            } else {
+                tooltip.style.visibility = 'hidden';
+                tooltip.style.top = '0px';
+                tooltip.style.left = Math.max(10, rect.left) + 'px';
+                const tooltipHeight = tooltip.offsetHeight;
+                tooltip.style.top = (rect.top - padding - gap - tooltipHeight) + 'px';
+                tooltip.style.visibility = 'visible';
+                tooltip.classList.add('arrow-bottom');
+            }
+
+            // Clamp to viewport
+            const tRect = tooltip.getBoundingClientRect();
+            if (tRect.right > window.innerWidth - 10) {
+                tooltip.style.left = (parseFloat(tooltip.style.left) - (tRect.right - window.innerWidth + 10)) + 'px';
+            }
+            if (tRect.left < 10) {
+                tooltip.style.left = '10px';
+            }
+            if (tRect.top < 10) {
+                const spotBottom = parseFloat(spotlight.style.top) + parseFloat(spotlight.style.height);
+                tooltip.style.top = (spotBottom + gap) + 'px';
+                tooltip.classList.remove('arrow-bottom');
+                tooltip.classList.add('arrow-top');
+            }
+
+            // Reveal after positioning (prevents flash of old positions)
+            spotlight.style.opacity = '1';
+            tooltip.style.opacity = '1';
+        }
+
+        // Reposition on resize/scroll (only if spotlight is already visible)
+        function handleTourReposition() {
+            if (!tourActive) return;
+            const spotlight = document.getElementById('tour-spotlight');
+            if (spotlight.style.opacity === '0') return; // step not shown yet
+            const step = activeTourSteps[tourCurrentStep];
+            if (!step) return;
+            if (step.target === null) {
+                positionTour(tourCurrentStep, null);
+                return;
+            }
+            let targetElements;
+            if (typeof step.target === 'function') {
+                const result = step.target();
+                if (!result) return;
+                targetElements = Array.isArray(result) ? result : [result];
+            } else {
+                const el = document.querySelector(step.target);
+                if (!el) return;
+                targetElements = [el];
+            }
+            positionTour(tourCurrentStep, targetElements);
+        }
+        window.addEventListener('resize', handleTourReposition);
+        window.addEventListener('scroll', handleTourReposition);
 
         // Page initialization
         window.addEventListener('DOMContentLoaded', function() {
