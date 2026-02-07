@@ -2099,18 +2099,59 @@
 
         function generateSummary() {
             let html = '<h3>Your Responses Summary</h3>';
-            html += `<p><strong>Job Title:</strong> ${respondentInfo.occupation}<br>`;
-            html += `<strong>Industry:</strong> ${respondentInfo.industry}<br>`;
-            html += `<strong>Country:</strong> ${respondentInfo.country}</p>`;
+
+            // Demographics
+            html += '<div style="margin-bottom:18px;">';
+            html += `<p style="margin:4px 0;"><strong>Job Title:</strong> ${respondentInfo.occupation || 'N/A'}</p>`;
+            html += `<p style="margin:4px 0;"><strong>Industry:</strong> ${respondentInfo.industry || 'N/A'}</p>`;
+            html += `<p style="margin:4px 0;"><strong>Experience:</strong> ${respondentInfo.experience || 'N/A'}</p>`;
+            html += `<p style="margin:4px 0;"><strong>Education:</strong> ${respondentInfo.education || 'N/A'}</p>`;
+            html += `<p style="margin:4px 0;"><strong>Country:</strong> ${respondentInfo.country || 'N/A'}</p>`;
+            html += `<p style="margin:4px 0;"><strong>Expertise Level:</strong> ${respondentInfo.expertise || 'N/A'}</p>`;
+            html += '</div>';
+
+            // Each section
             sectionKeys.forEach(key => {
-                if (responses[key]) {
-                    html += `
-                        <p><strong>${surveyData[key].title}:</strong><br>
-                        Most Challenging: ${responses[key].most || 'N/A'}<br>
-                        Least Challenging: ${responses[key].least || 'N/A'}</p>
-                    `;
+                const resp = responses[key];
+                if (!resp) return;
+                const data = surveyData[key];
+
+                html += '<div style="margin-bottom:18px; padding:12px; background:#eafaf1; border-radius:6px;">';
+                html += `<h4 style="margin:0 0 8px 0;">${data.title}</h4>`;
+                html += `<p style="margin:4px 0;"><strong>Most Challenging:</strong> ${resp.most || 'N/A'}</p>`;
+                html += `<p style="margin:4px 0;"><strong>Least Challenging:</strong> ${resp.least || 'N/A'}</p>`;
+
+                // Comparison: Most vs others
+                const othersForMost = resp.othersForMost || [];
+                if (othersForMost.length > 0) {
+                    html += `<p style="margin:10px 0 4px 0;"><strong>Comparisons — ${resp.most} (Most) vs others:</strong></p>`;
+                    html += '<table style="border-collapse:collapse; width:100%; margin-bottom:8px; font-size:0.9rem;">';
+                    html += '<tr style="background:#d5f5e3;"><th style="text-align:left; padding:4px 8px; border:1px solid #b2dfdb;">Compared to</th><th style="text-align:left; padding:4px 8px; border:1px solid #b2dfdb;">Rating</th></tr>';
+                    othersForMost.forEach((barrier, idx) => {
+                        const answer = resp[`comp_most_${idx}`] || 'N/A';
+                        const label = barrier === resp.least ? `${barrier} (Least)` : barrier;
+                        html += `<tr><td style="padding:4px 8px; border:1px solid #b2dfdb;">${label}</td><td style="padding:4px 8px; border:1px solid #b2dfdb;">${answer}</td></tr>`;
+                    });
+                    html += '</table>';
                 }
+
+                // Comparison: Others vs Least
+                const othersForLeast = resp.othersForLeast || [];
+                if (othersForLeast.length > 0) {
+                    html += `<p style="margin:10px 0 4px 0;"><strong>Comparisons — others vs ${resp.least} (Least):</strong></p>`;
+                    html += '<table style="border-collapse:collapse; width:100%; font-size:0.9rem;">';
+                    html += '<tr style="background:#d5f5e3;"><th style="text-align:left; padding:4px 8px; border:1px solid #b2dfdb;">Barrier</th><th style="text-align:left; padding:4px 8px; border:1px solid #b2dfdb;">Rating</th></tr>';
+                    othersForLeast.forEach((barrier, idx) => {
+                        const answer = resp[`comp_least_${idx}`] || 'N/A';
+                        const label = barrier === resp.most ? `${barrier} (Most)` : barrier;
+                        html += `<tr><td style="padding:4px 8px; border:1px solid #b2dfdb;">${label}</td><td style="padding:4px 8px; border:1px solid #b2dfdb;">${answer}</td></tr>`;
+                    });
+                    html += '</table>';
+                }
+
+                html += '</div>';
             });
+
             document.getElementById('summary').innerHTML = html;
         }
 
