@@ -669,7 +669,6 @@
                     <label>Highest Education Level <span class="required">*</span></label>
                     <select id="demo-education" required onchange="toggleEducationOther()">
                         <option value="">-- Select --</option>
-                        <option value="High School">High School</option>
                         <option value="Bachelor's">Bachelor's Degree</option>
                         <option value="Master's">Master's Degree</option>
                         <option value="PhD">PhD / Doctorate</option>
@@ -686,7 +685,7 @@
 
             <div class="form-group" id="fg-country">
                 <label>Country <span class="required">*</span></label>
-                <input type="text" id="demo-country" placeholder="Country of evaluation" required>
+                <input type="text" id="demo-country" placeholder="Country of residence" required>
             </div>
 
             <div class="form-group" id="fg-expertise">
@@ -763,26 +762,25 @@
             'High infrastructure cost': 'Extensive capital is required for charging stations, grid upgrades, and electric road systems, creating major cost burdens especially for long-haul routes and small operators.',
             'High financial risk': 'Volatile freight demand undermines investment recovery for electric and automated trucks, which depend on high utilization. Low use of costly charging infrastructure increases financial risk, while broader economic uncertainty deters capital-constrained carriers and slows scalable deployment.',
             'Complex business models': 'Complex and unstandardized business models create financial uncertainty in electrified and automated freight. Ambiguous cost–benefit allocation in collaborative schemes (e.g., platooning) and limited research on leasing or sharing models hinder capital mitigation.',
-            'Battery lifecycle issues': 'Battery reliance on scarce minerals (lithium, cobalt, nickel) drives supply risks and extraction impacts. Energy-intensive manufacturing raises initial GHG emissions and material demand. Weak recycling and disposal systems heighten pollution and resource losses.',
+            'Battery lifecycle emissions & recycling issues': 'Battery reliance on scarce minerals (lithium, cobalt, nickel) drives supply risks and extraction impacts. Energy-intensive manufacturing raises initial GHG emissions and material demand. Weak recycling and disposal systems heighten pollution and resource losses.',
             'Emissions from electricity generation': 'Environmental gains from electric freight depend on the grid\'s carbon intensity, shifting emissions from tailpipes to power generation. BEV benefits materialize only with low-carbon or renewable electricity. Carbon-intensive grids can negate reductions and increase SO₂ and PM₂.₅ from power plants.',
-            'Ecological impact of charging infrastructure': 'ERS infrastructure adds significant material and ecological burdens. High metal use (e.g., copper) drives extraction toxicity. Large installations increase land-use. Studies often omit these impacts. Protective zones, permissions, noise protection zones are additional considerations.',
-            'Emissions from induced demand with automation': 'Automation may increase overall freight demand and vehicle miles traveled, potentially offsetting environmental benefits from electrification.',
+            'Ecological/land-use constraints for installation of charging sites': 'ERS infrastructure adds significant material and ecological burdens. High metal use (e.g., copper) drives extraction toxicity. Large installations increase land-use. Studies often omit these impacts. Protective zones, permissions, noise protection zones are additional considerations.',
             'Limited battery range': 'Limited battery range in electric freight necessitates large, costly, and heavy battery packs, raising purchase costs, increasing TCO, inducing range anxiety, and reducing payload capacity, which can require larger fleets.',
-            'Limited charging-network coverage': 'Sparse, uneven, and low-capacity charging networks hinder electric freight, limiting long-haul viability, and reducing operational flexibility. Insufficient public charging for on-route needs discourages adoption, reinforcing a "chicken-and-egg" cycle that delays infrastructure investment.',
-            'Delay in power-grid upgrade': 'Insufficient power-grid upgrades hinder large-scale electric freight, as fleet charging creates major peak loads requiring costly and slow infrastructure expansion. High upgrade costs and risks of overload discourage adoption, delaying reliable high-power charging deployment.',
+            'Limited charging-infrastructure coverage': 'Sparse, uneven, and low-capacity charging networks hinder electric freight, limiting long-haul viability, and reducing operational flexibility. Insufficient public charging for on-route needs discourages adoption, reinforcing a "chicken-and-egg" cycle that delays infrastructure investment.',
+            'Power-grid readiness constraints': 'Insufficient power-grid upgrades hinder large-scale electric freight, as fleet charging creates major peak loads requiring costly and slow infrastructure expansion. High upgrade costs and risks of overload discourage adoption, delaying reliable high-power charging deployment.',
             'Uncertainty in technology maturity': 'Uncertain availability of electric and autonomous truck technologies delays investment decisions. Competing pathways (BEVs, fuel cells, ERS) and unclear deployment timelines for driverless systems increase risk. Limited data on CAV performance reinforces hesitation, leading operators to avoid long-term commitments to immature technologies.',
-            'Charging time issues': 'Slow charging times reduce vehicle availability and disrupt delivery schedules, with congestion at peak hours further delaying operations, especially for heavy-duty trucks.',
-            'Scheduling/synchronisation complexity': 'Rigid delivery schedules conflict with cost-efficient off-peak charging. Solving joint routing–charging problems is computationally complex, and autonomous systems add further coordination challenges, especially for platoon synchronization.',
-            'Uncertainty in traffic and weather conditions': 'ADS struggle in complex traffic and adverse weather, undermining reliability and trust, while low temperatures reduce EV range and unpredictable congestion disrupts scheduling.',
-            'Lack of stakeholder collaboration': 'Misaligned priorities and unclear roles among OEMs, logistics operators, utilities, and governments hinder coordinated investment in charging, grid upgrades, and digital infrastructure.',
-            'Lack of public acceptance': 'Low public acceptance delays electrified and automated freight, driven by safety concerns, distrust of autonomous systems, and fear of cyber risks. Limited awareness of benefits and resistance among drivers further hinder adoption, while weak trust slows supportive policy and investment.',
-            'Job losses & workforce-transition concerns': 'Automation raises fears of job losses and downgraded work quality, especially for long-distance drivers, reducing acceptance. The shift toward technical roles demands new skills, but limited reskilling programs and an aging workforce intensify resistance and slow adoption.',
-            'Inability to maintain required service levels': 'Unproven reliability of electric and autonomous systems threatens service levels required in freight, which operates within rigid time-windows and narrow margins.',
-            'Safety risks': 'Safety concerns for electric freight focus on battery fire and explosion risks, while autonomous systems face distrust over unexpected failures and high cybersecurity vulnerability.',
-            'Lack of supportive policies': 'Weak policy support and limited public financial incentives hinders electrified and automated freight by deterring investment in costly vehicles, charging, and grid upgrades.',
+            'Long charging time': 'Slow charging reduce vehicle availability and disrupt delivery schedules, with congestion at peak hours further delaying operations, especially for heavy-duty trucks.',
+            'Scheduling/synchronization complexity': 'Rigid delivery schedules conflict with cost-efficient off-peak charging. Solving joint routing–charging problems is computationally complex, and autonomous systems add further coordination challenges, especially for platoon synchronization.',
+            'Traffic and weather uncertainty': 'ADS struggle in complex traffic and adverse weather, undermining reliability and trust, while low temperatures reduce EV range and unpredictable congestion disrupts scheduling.',
+            'Service reliability challenges': 'Unproven reliability of electric and autonomous systems threatens service levels required in freight, which operates within rigid time-windows and narrow margins.',
+            'Public acceptance concerns': 'Public skepticism stalls adoption of electrified and automated freight. This reluctance extends to key stakeholders, where misaligned priorities among OEMs, logistics operators, utilities, and governments impede coordinated investment in enabling infrastructure.',
+            'Workforce transition challenges': 'Automation raises fears of job losses and downgraded work quality, especially for long-distance drivers, reducing acceptance. The shift toward technical roles demands new skills, but limited reskilling programs and an aging workforce intensify resistance and slow adoption.',
+            'Safety perception concerns': 'Safety concerns for electric freight focus on battery fire and explosion risks, while autonomous systems face distrust over unexpected failures and high cybersecurity vulnerability.',
+            'Limited public awareness': 'Insufficient understanding of automated and electric freight technologies, combined with low awareness of their benefits and resistance among drivers, constrains public acceptance and slows adoption.',
+            'Lack of supportive policies and incentives': 'Weak policy support and limited public financial incentives hinder electrified and automated freight by deterring investment in costly vehicles, charging, and grid upgrades.',
             'Lack of regulations and standardizations': 'Fragmented legal frameworks and standards for interoperability create investment uncertainty for electrified and automated freight. Ambiguous rules and unclear liability force costly human supervision, limiting autonomous benefits. Cross-border regulatory inconsistency adds complexity.',
             'Data governance challenges': 'Weak data governance and privacy concerns hinder collaboration and scalable connected operations, slowing market deployment.',
-            'Difference in political prioritization': 'Divergent political priorities across different territories slow electrified and automated freight.'
+            'Political prioritization discrepancies': 'Divergent political priorities across different territories slow electrified and automated freight.'
         };
 
         const surveyData = {
@@ -798,27 +796,27 @@
             },
             environmental: {
                 title: "Environmental Barriers",
-                items: ['Battery lifecycle issues', 'Emissions from electricity generation', 'Ecological impact of charging infrastructure', 'Emissions from induced demand with automation'],
+                items: ['Battery lifecycle emissions & recycling issues', 'Emissions from electricity generation', 'Ecological/land-use constraints for installation of charging sites'],
                 hasDescriptions: true
             },
             technological: {
                 title: "Technological Barriers",
-                items: ['Limited battery range', 'Limited charging-network coverage', 'Delay in power-grid upgrade', 'Uncertainty in technology maturity'],
+                items: ['Limited battery range', 'Limited charging-infrastructure coverage', 'Power-grid readiness constraints', 'Uncertainty in technology maturity'],
                 hasDescriptions: true
             },
             operational: {
                 title: "Operational Barriers",
-                items: ['Charging time issues', 'Scheduling/synchronisation complexity', 'Uncertainty in traffic and weather conditions', 'Lack of stakeholder collaboration'],
+                items: ['Long charging time', 'Scheduling/synchronization complexity', 'Traffic and weather uncertainty', 'Service reliability challenges'],
                 hasDescriptions: true
             },
             social: {
                 title: "Social Barriers",
-                items: ['Lack of public acceptance', 'Job losses & workforce-transition concerns', 'Inability to maintain required service levels', 'Safety risks'],
+                items: ['Public acceptance concerns', 'Workforce transition challenges', 'Safety perception concerns', 'Limited public awareness'],
                 hasDescriptions: true
             },
             policy: {
                 title: "Policy Barriers",
-                items: ['Lack of supportive policies', 'Lack of regulations and standardizations', 'Data governance challenges', 'Difference in political prioritization'],
+                items: ['Lack of supportive policies and incentives', 'Lack of regulations and standardizations', 'Data governance challenges', 'Political prioritization discrepancies'],
                 hasDescriptions: true
             }
         };
