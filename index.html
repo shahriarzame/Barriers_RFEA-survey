@@ -756,6 +756,7 @@
         
         let respondentInfo = {};
         let demographicsLocked = false;
+        let surveySubmitted = false;
         
         const descriptions = {
             'High total cost of fleet ownership': 'High total cost of ownership results from expensive batteries, automation technologies, cost uncertainties, charging inefficiencies, limited servicing infrastructure, battery degradation, high electricity tariff during peak hour and increased system complexity, elevating operating expenses and diminishing overall economic viability.',
@@ -764,12 +765,12 @@
             'Complex business models': 'Complex and unstandardized business models create financial uncertainty in electrified and automated freight. Ambiguous cost–benefit allocation in collaborative schemes (e.g., platooning) and limited research on leasing or sharing models hinder capital mitigation.',
             'Battery lifecycle emissions & recycling issues': 'Battery reliance on scarce minerals (lithium, cobalt, nickel) drives supply risks and extraction impacts. Energy-intensive manufacturing raises initial GHG emissions and material demand. Weak recycling and disposal systems heighten pollution and resource losses.',
             'Emissions from electricity generation': 'Environmental gains from electric freight depend on the grid\'s carbon intensity, shifting emissions from tailpipes to power generation. BEV benefits materialize only with low-carbon or renewable electricity. Carbon-intensive grids can negate reductions and increase SO₂ and PM₂.₅ from power plants.',
-            'Ecological/land-use constraints for installation of charging sites': 'ERS infrastructure adds significant material and ecological burdens. High metal use (e.g., copper) drives extraction toxicity. Large installations increase land-use. Studies often omit these impacts. Protective zones, permissions, noise protection zones are additional considerations.',
+            'Ecological/land-use constraints for installation of charging sites': 'ERS infrastructure adds significant material and ecological burdens. High metal use (e.g., copper) drives extraction toxicity. Large installations increase land-use impacts. Studies often omit these impacts. Protective zones, permissions, noise protection zones are additional considerations.',
             'Limited battery range': 'Limited battery range in electric freight necessitates large, costly, and heavy battery packs, raising purchase costs, increasing TCO, inducing range anxiety, and reducing payload capacity, which can require larger fleets.',
             'Limited charging-infrastructure coverage': 'Sparse, uneven, and low-capacity charging networks hinder electric freight, limiting long-haul viability, and reducing operational flexibility. Insufficient public charging for on-route needs discourages adoption, reinforcing a "chicken-and-egg" cycle that delays infrastructure investment.',
             'Power-grid readiness constraints': 'Insufficient power-grid upgrades hinder large-scale electric freight, as fleet charging creates major peak loads requiring costly and slow infrastructure expansion. High upgrade costs and risks of overload discourage adoption, delaying reliable high-power charging deployment.',
             'Uncertainty in technology maturity': 'Uncertain availability of electric and autonomous truck technologies delays investment decisions. Competing pathways (BEVs, fuel cells, ERS) and unclear deployment timelines for driverless systems increase risk. Limited data on CAV performance reinforces hesitation, leading operators to avoid long-term commitments to immature technologies.',
-            'Long charging time': 'Slow charging reduce vehicle availability and disrupt delivery schedules, with congestion at peak hours further delaying operations, especially for heavy-duty trucks.',
+            'Long charging time': 'Slow charging reduces vehicle availability and disrupt delivery schedules, with congestion at peak hours further delaying operations, especially for heavy-duty trucks.',
             'Scheduling/synchronization complexity': 'Rigid delivery schedules conflict with cost-efficient off-peak charging. Solving joint routing–charging problems is computationally complex, and autonomous systems add further coordination challenges, especially for platoon synchronization.',
             'Traffic and weather uncertainty': 'ADS struggle in complex traffic and adverse weather, undermining reliability and trust, while low temperatures reduce EV range and unpredictable congestion disrupts scheduling.',
             'Service reliability challenges': 'Unproven reliability of electric and autonomous systems threatens service levels required in freight, which operates within rigid time-windows and narrow margins.',
@@ -1204,6 +1205,16 @@
                         }
                     }
                 });
+
+                // Restore submission state
+                const submitted = localStorage.getItem('survey_submitted');
+                if (submitted === 'true') {
+                    surveySubmitted = true;
+                    // Disable submit buttons after DOM is ready
+                    setTimeout(() => {
+                        disableAllSubmitButtons();
+                    }, 300);
+                }
 
                 // Navigate to saved page (suppress tour on restore)
                 tourSuppressed = true;
@@ -1997,6 +2008,16 @@
             return true;
         }
 
+        function disableAllSubmitButtons() {
+            const submitButtons = document.querySelectorAll('[id^="submit-btn"]');
+            submitButtons.forEach(btn => {
+                btn.disabled = true;
+                btn.textContent = '✓ Already Submitted';
+                btn.style.opacity = '0.5';
+                btn.style.cursor = 'not-allowed';
+            });
+        }
+
         function captureDemographics() {
             const occupation = document.getElementById('demo-occupation')?.value.trim();
             let industry = document.getElementById('demo-industry')?.value;
@@ -2025,6 +2046,12 @@
         }
 
         function attemptSubmit() {
+            // Check if survey has already been submitted
+            if (surveySubmitted) {
+                showToast('Survey already submitted! Use "Start Over" to begin a new survey.', 'info');
+                return;
+            }
+
             // Capture demographics data
             captureDemographics();
 
@@ -2037,19 +2064,19 @@
 
         async function submitSurvey() {
             document.getElementById('submit-overlay').classList.add('active');
-            
+
             const payload = {
                 respondent: respondentInfo,
                 responses: responses
             };
-            
+
             console.log('Submitting payload:', payload);
-            
+
             try {
                 if (GOOGLE_SCRIPT_URL === "YOUR_GOOGLE_APPS_SCRIPT_URL_HERE") {
                     throw new Error("Google Apps Script URL not configured. Please update GOOGLE_SCRIPT_URL in the HTML file.");
                 }
-                
+
                 const response = await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
                     mode: 'no-cors',
@@ -2058,12 +2085,17 @@
                     },
                     body: JSON.stringify(payload)
                 });
-                
+
+                // Mark survey as submitted and disable submit buttons
+                surveySubmitted = true;
+                localStorage.setItem('survey_submitted', 'true');
+                disableAllSubmitButtons();
+
                 document.getElementById('submit-overlay').classList.remove('active');
                 document.getElementById('results').style.display = 'block';
                 document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
                 generateSummary();
-                
+
             } catch (error) {
                 console.error('Submission error:', error);
                 document.getElementById('submit-overlay').classList.remove('active');
@@ -2072,7 +2104,7 @@
                 document.getElementById('error-message').textContent = error.message;
                 document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
                 generateSummary();
-                
+
                 localStorage.setItem('survey_backup_' + Date.now(), JSON.stringify(payload));
             }
         }
@@ -2232,7 +2264,7 @@
             },
             {
                 target: '#submit-btn-demo',
-                text: 'Survey can be only be submitted after completing all sections, but you can click this button to navigate the survey to the first missing question and get a reminder of any incomplete sections.',
+                text: 'Survey can only be submitted after completing all sections, but you can click this button to navigate the survey to the first missing question and get a reminder of any incomplete sections.',
                 position: 'top'
             },
             {
@@ -2265,7 +2297,7 @@
                 target: function() {
                     return document.getElementById('mainCategories-continue');
                 },
-                text: 'After the first two questions have been answered, press this button for the comparisons questions. Be advised that once you press this button, your answers to the first two questions will be locked and you will need to unlock them to make any changes (which will reset all comparison questions i.e. Question 3 and onwards in this page).',
+                text: 'After answering the first two questions identifying the most challenging and least challenging barriers, press this button to generate the comparison questions.\nOnce the button is pressed, your selections for these two questions will be locked. To modify them, you must unlock your selections, which will reset and delete all generated comparison questions.',
                 position: 'top'
             }
         ];
