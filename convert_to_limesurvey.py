@@ -544,7 +544,7 @@ def assemble(builder, survey_data, descriptions, scale_options, demo_opts):
     for skey in SECTION_CODES:
         section = survey_data[skey]
         gid = builder.add_group(
-            group_name=section['title'],
+            group_name=_safe_html(section['title']),
             group_order=group_order,
             description=SECTION_INTRO + '<script src="upload/surveys/{SID}/files/bws_reset.js"></script>',
         )
