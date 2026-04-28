@@ -48,7 +48,7 @@ def main():
         _check_survey_level(endpoint, session, args.sid, issue)
         all_qs = _fetch_all_questions(endpoint, session, args.sid, issue)
         if all_qs is None:
-            return _report(args.sid, len(issues), 0, issues)
+            return _report(args.sid, EXPECTED_QUESTION_COUNT, 0, issues)
         all_codes = {q.get('title') for q in all_qs}
         for q in all_qs:
             _check_question(q, all_codes, issue)
