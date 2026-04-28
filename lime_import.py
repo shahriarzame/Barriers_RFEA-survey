@@ -89,9 +89,9 @@ def main():
         if isinstance(groups, list):
             for g in groups:
                 gid = g['gid']
-                props = rpc(endpoint, 'get_group_properties',
-                            [session, gid, ['description'], 'en'])
-                desc = props.get('description', '') if isinstance(props, dict) else ''
+                group_props = rpc(endpoint, 'get_group_properties',
+                                  [session, gid, ['description'], 'en'])
+                desc = group_props.get('description', '') if isinstance(group_props, dict) else ''
                 if '{SID}' in desc:
                     rpc(endpoint, 'set_group_properties',
                         [session, gid,
